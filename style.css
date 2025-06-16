@@ -1,0 +1,353 @@
+/* ============================================================= */
+/*  RESET + BASE                                                 */
+/* ============================================================= */
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  /* Optimized background settings for better fit */
+  background: url('img/megabackground.png') center center / cover no-repeat fixed;
+  background-attachment: fixed;
+  background-size: auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height:100vh;
+  width: -90px;
+  display:flex;justify-content:center;align-items:center;
+  overflow-x:auto;
+  padding: 10px;
+  position: relative;
+}
+
+/* Enhanced overlay for better game visibility */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Subtle dark overlay for better contrast */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ============================================================= */
+/*  LAYOUT PANELS                                                */
+/* ============================================================= */
+
+.slot-machine{
+  position:relative;
+  width:var(--cabinet-w, 700px);
+  max-width:100%;
+  background:rgba(0, 0, 0, 0); /* Semi-transparent dark background */
+  border-radius:20px;
+  padding:30px;
+  box-shadow:0 8px 24px rgba(0, 0, 0, 0.6);
+  color:#ffffff00;
+  font-size:1.2em;
+  text-align:center;
+  border: 2px solid rgba(255, 217, 0, 0); /* Subtle golden border */
+}
+
+.header{ text-align:center;margin-bottom:20px }
+.title{
+  color:#ffd700;font-size:2.5em;font-weight:700;
+  text-shadow:3px 3px 6px rgba(0,0,0,.8);
+  margin-bottom:10px;
+}
+.ways-to-win{
+  display:inline-block;margin-bottom:10px;
+  padding:10px 20px;font-size:1.2em;color:#ffffff;
+  background:rgba(255,215,0,.25);
+  border-radius:25px;
+  border: 1px solid rgba(255,215,0,.5);
+}
+
+/* ============================================================= */
+/*  FREE-SPIN BANNER                                             */
+/* ============================================================= */
+.banner{
+  position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  background:#c74fff;color:#ffffff00;padding:12px 40px;font-weight:700;
+  font-size:1.6em;border-radius:8px;box-shadow:0 8px 16px rgba(0, 0, 0, 0);
+  transition:transform .6s cubic-bezier(.25,.8,.25,1),opacity .4s;
+  z-index:20;pointer-events:none;opacity:0;
+}
+.banner.show   {transform:translate(-50%,90px);opacity:1;}
+.banner.hidden {opacity:0;}
+
+/* ============================================================= */
+/*  REELS                                                        */
+/* ============================================================= */
+.game-area{
+  background:rgba(0, 0, 0, 0);padding:10px;border-radius:10px;
+  border:2px solid #ffd90000;margin-bottom:20px;
+  position:relative;
+  box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.1);
+}
+.reels-container{display:flex;height:450px;gap:0;overflow:hidden}
+
+.reel{
+  flex:1;background:rgba(0, 0, 0, 0);position:relative;overflow:hidden;
+  border-right:2px solid rgba(0, 0, 0, 0);
+}
+.reel:last-child{border-right:none}
+
+.reel-content{
+  position:absolute;top:0;left:0;width:100%;
+  display:flex;flex-direction:column;
+  transform:translateY(0);will-change:transform;
+}
+
+/* camera shake on big win ------------------------------------- */
+@keyframes camShake{
+  0%,100%{transform:translate(0)}
+  20%{transform:translate(-6px,-3px)}
+  40%{transform:translate(5px,4px)}
+  60%{transform:translate(-4px,3px)}
+  80%{transform:translate(3px,-4px)}
+}
+.slot-machine.big-win{animation:camShake .5s ease}
+
+/* Low-FX mode kills wiggle & shake ---------------------------- */
+body.lowfx .reel.wiggle,
+body.lowfx .slot-machine.big-win{animation:none!important}
+
+/* SVG glow frame ---------------------------------------------- */
+.reel-frame{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;mix-blend-mode:screen;
+}
+
+/* ============================================================= */
+/*  SYMBOL TILE                                                  */
+/* ============================================================= */
+.symbol{
+  width:100%;height:75px;flex-shrink:0;position:relative;
+  overflow:hidden;
+}
+.symbol img{
+  width:100%;height:100%;display:block;
+  object-fit:cover;pointer-events:none;user-select:none;
+}
+
+/* ============================================================= */
+/*  WIN EFFECTS                                                  */
+/* ============================================================= */
+.symbol.marked {
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.8);
+  border-radius: 6px;
+  animation: pulse .45s alternate,
+             wobble .45s ease-in-out;
+}
+@keyframes pulse {from{transform:scale(1)}to{transform:scale(1.05)}}
+@keyframes wobble{
+  0%{rotate:0deg}50%{rotate:-2deg}
+  75%{rotate:2deg}100%{rotate:0deg}
+}
+.symbol[data-scatter="1"].marked{
+  box-shadow:0 0 0 3px #c74fff,0 0 12px 4px #c74fff70;
+}
+
+/* vanish + soft bounce ---------------------------------------- */
+.symbol.vanish{animation:vanish .25s forwards}
+@keyframes vanish{to{opacity:0;transform:scale(.25)}}
+
+.symbol.landed{animation:bounceEnd .12s ease-out}
+@keyframes bounceEnd{
+  0%{transform:scaleY(1)}85%{transform:scaleY(.9)}100%{transform:scaleY(1)}
+}
+
+/* ============================================================= */
+/*  MAIN SPIN BUTTON                                             */
+/* ============================================================= */
+.controls{text-align:center;margin-top:20px}
+
+.spin-btn{
+  background:linear-gradient(145deg,#ffd700,#ffcd00);
+  color:#1a1a2e;font-weight:700;font-size:1.4em;
+  padding:15px 40px;border:none;border-radius:50px;
+  cursor:pointer;text-transform:uppercase;
+  box-shadow:0 8px 16px rgba(255,215,0,.4);
+  transition:transform .2s,box-shadow .2s;
+  border: 2px solid rgba(255,215,0,.8);
+}
+.spin-btn:hover  {transform:translateY(-2px);
+                  box-shadow:0 12px 24px rgba(255,215,0,.6)}
+.spin-btn:active {transform:translateY(0)}
+.spin-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* ============================================================= */
+/*  HUD / PLAY CONTROLS                                          */
+/* ============================================================= */
+.play-controls{
+  margin:12px 0;display:flex;gap:12px;justify-content:center;
+}
+.hud-btn{
+  background:rgba(51,51,51,.9);
+  color:#ffd700;border:2px solid #ffd700;
+  padding:6px 20px;border-radius:25px;cursor:pointer;font-weight:600;
+  transition:background .2s;
+  backdrop-filter: blur(4px);
+}
+.hud-btn:hover{background:rgba(255, 215, 0, 0.2)}
+
+/* ============================================================= */
+/*  INFO PANEL                                                   */
+/* ============================================================= */
+.info-panel{display:flex;gap:20px;margin-top:20px}
+.info-box{
+  flex:1;padding:15px;border-radius:10px;text-align:center;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255, 215, 0, 0.3);
+  color:#ffffff;
+  backdrop-filter: blur(4px);
+}
+.info-label{font-size:.9em;opacity:.9;margin-bottom:5px}
+.info-value{font-size:1.2em;font-weight:700;color:#ffd700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,.8);
+}
+
+/* board shake used during cascades ---------------------------- */
+@keyframes shake{
+  0%{transform:translateX(0)}25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}75%{transform:translateX(-2px)}
+ 100%{transform:translateX(0)}
+}
+.game-area.shake{animation:shake .45s ease-in-out}
+
+/* ============================================================= */
+/*  RESPONSIVE                                                   */
+/* ============================================================= */
+@media (max-width:768px){
+  .slot-machine{
+    padding:20px;
+    margin:10px;
+    max-width:95vw;
+  }
+  .title{font-size:2em}
+  .reels-container{height:350px}
+  .symbol{height:60px}
+
+  /* info panel drops below reels, controls on top */
+  .info-panel   {flex-direction:column;order:3}
+  .game-area    {order:2;margin-top:10px}
+  .play-controls{order:1}
+}
+
+/* Additional responsive breakpoint for very small screens */
+@media (max-width:480px){
+  .slot-machine{
+    padding:15px;
+    margin:5px;
+  }
+  .title{font-size:1.8em}
+  .reels-container{height:300px}
+  .symbol{height:50px}
+}
+
+/* ---------- BIG SCATTER CELEBRATION --------------------------- */
+
+/* scatter tiles grow / glow */
+@keyframes scatPulse {
+  0%   { transform:scale(1)   rotate(0);   box-shadow:0 0 0 0 #c74fff; }
+  40%  { transform:scale(1.1) rotate(5deg);box-shadow:0 0 30px 12px #c74fff55; }
+  100% { transform:scale(1)   rotate(0);   box-shadow:0 0 0 0 #c74fff00; }
+}
+.symbol.scatter-land {
+  z-index:6;
+  animation:scatPulse .7s ease-out forwards;
+}
+
+/* wipe flash --------------------------------------------------- */
+.flash-overlay{
+  position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent 0%,rgba(255, 255, 255, 0.3) 50%,transparent 100%);
+  pointer-events:none;
+}
+.flash-overlay.animate{
+  animation:flashWipe .6s forwards;
+}
+@keyframes flashWipe{
+  to{ left:100%; }
+}
+
+/* confetti pieces ---------------------------------------------- */
+.confetti{
+  position:absolute;width:8px;height:12px;border-radius:2px;
+  background: var(--col); opacity:.9; pointer-events:none; z-index:7;
+  animation:confFall linear forwards;
+}
+@keyframes confFall{
+  0%  { transform:translateY(0)  rotate(0); opacity:1; }
+  90% { opacity:1; }
+  100%{ transform:translateY(120vh) rotate(360deg); opacity:0; }
+}
+
+/* zoom-shake camera -------------------------------------------- */
+@keyframes zoomShake{
+  0%{ transform:scale(1) translate(0); }
+  10%{transform:scale(1.05) translate(-3px,2px);}
+  20%{transform:scale(1.05) translate(4px,-3px);}
+  30%{transform:scale(1.05) translate(-4px,1px);}
+  40%{transform:scale(1.05) translate(3px,-3px);}
+  100%{transform:scale(1)   translate(0);}
+}
+.slot-machine.scatter-celebration{ animation:zoomShake .5s ease; }
+
+/* disable in Low-FX mode --------------------------------------- */
+body.lowfx .symbol.scatter-land,
+body.lowfx .flash-overlay.animate,
+body.lowfx .confetti,
+body.lowfx .slot-machine.scatter-celebration{ animation:none!important; }
+
+/* slow-drop scatter ------------------------------------------------ */
+/* ---------- TEASE ZOOM / PURPLE GLOW ON REEL-2 ---------------- */
+@keyframes teaseZoom{
+  0%,100%{transform:scale(1);   box-shadow:0 0 0 0 #c74fff00;}
+  50%    {transform:scale(1.08);box-shadow:0 0 24px 8px #c74fff70;}
+}
+.reel.tease{
+  animation:teaseZoom .8s ease-in-out infinite;
+  z-index:4;
+}
+body.lowfx .reel.tease{ animation:none; box-shadow:none; }
+
+/* ---------- SLOW-DROP OF FORCED SCATTER ----------------------- */
+@keyframes slowDrop{
+  0%  {transform:translateY(-140%) scale(.8);opacity:0;}
+  40% {opacity:1;}
+  100%{transform:translateY(0)     scale(1);opacity:1;}
+}
+.symbol.scatter-drop{
+  animation:slowDrop .9s cubic-bezier(.22,1,.36,1) forwards;
+  filter:drop-shadow(0 0 8px #c74fff);
+}
+body.lowfx .symbol.scatter-drop{ animation:none; filter:none; }
+
+.cabinet{
+  position:relative;
+  width:var(--cabinet-w);
+  height:var(--cabinet-h);
+  background:url('/img/b.png') center/contain no-repeat;
+  display:flex;justify-content:center;align-items:center;
+}
+
+
+
+/* For very wide backgrounds */
+@media (min-aspect-ratio: 21/9) {
+  body {
+    background-size: 100% auto;
+    background-position: center center;
+  }
+}
+
+/* For very tall backgrounds */
+@media (max-aspect-ratio: 9/16) {
+  body {
+    background-size: auto 100%;
+    background-position: center center;
+  }
+}

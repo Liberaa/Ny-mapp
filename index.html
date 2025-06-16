@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Megaways Slot Machine</title>
+
+
+  <!-- main CSS (now contains the new .cabinet rules) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+
+<body>
+
+
+  <!-- ART-DECO CABINET BACKGROUND -->
+  <div class="cabinet">
+
+
+    <!-- THE GAME BOARD -->
+    <div class="slot-machine">
+
+
+      <!-- HEADER ---------------------------------------------------->
+      <div class="header">
+        <h1 class="title">MEGAWAYS</h1>
+        <div class="ways-to-win" id="waysToWin">Ways to Win: 0</div>
+      </div>
+
+
+      <!-- FREE-SPIN BANNER ------------------------------------------>
+      <div id="fsBanner" class="banner hidden"></div>
+
+
+      <!-- REEL AREA ------------------------------------------------->
+      <div class="game-area">
+        <div class="reels-container" id="reelsContainer">
+          <!-- reels injected by JS -->
+        </div>
+
+
+        <!-- SVG glow frame (sits on top of reels) -->
+     
+      </div>
+
+
+      <!-- MAIN SPIN BUTTON ----------------------------------------->
+      <div class="controls">
+        <button class="spin-btn" id="spinBtn">SPIN</button>
+      </div>
+
+
+      <!-- EXTRA PLAY CONTROLS -------------------------------------->
+      <div class="play-controls">
+        <button id="turboBtn" class="hud-btn">Turbo: Off</button>
+        <button id="autoBtn"  class="hud-btn">Auto 10</button>
+        <button id="fxBtn"    class="hud-btn">Low FX: Off</button>
+      </div>
+
+
+      <!-- INFO PANEL ----------------------------------------------->
+      <div class="info-panel">
+        <div class="info-box">
+          <div class="info-label">Total Spins</div>
+          <div class="info-value" id="totalSpins">0</div>
+        </div>
+
+
+        <div class="info-box">
+          <div class="info-label">Free Spins</div>
+          <div class="info-value" id="freeSpins">0</div>
+        </div>
+
+
+        <div class="info-box">
+          <div class="info-label">Current Bet</div>
+          <div class="info-value">$1.00</div>
+        </div>
+
+
+        <div class="info-box">
+          <div class="info-label">Max Ways</div>
+          <div class="info-value">117,649</div>
+        </div>
+      </div>
+
+
+    </div><!-- /.slot-machine -->
+  </div><!-- /.cabinet -->
+
+
+  <!-- Game logic -->
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>
+
+
+
