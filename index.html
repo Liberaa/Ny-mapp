@@ -3,81 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Phaser 3 -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+
   <title>Megaways Slot Machine</title>
 
-
-  <!-- main CSS (now contains the new .cabinet rules) -->
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
-
 <body>
-
 
   <!-- ART-DECO CABINET BACKGROUND -->
   <div class="cabinet">
 
-
     <!-- THE GAME BOARD -->
     <div class="slot-machine">
 
-
-      <!-- HEADER ---------------------------------------------------->
+      <!-- HEADER -------------------------------------------------->
       <div class="header">
         <h1 class="title">MEGAWAYS</h1>
         <div class="ways-to-win" id="waysToWin">Ways to Win: 0</div>
       </div>
 
-
-      <!-- FREE-SPIN BANNER ------------------------------------------>
+      <!-- FREE-SPIN BANNER --------------------------------------->
       <div id="fsBanner" class="banner hidden"></div>
 
+      <!-- REEL AREA + PHASER FX BACKGROUND ----------------------->
+      <div class="game-area" id="gameArea">
 
-      <!-- REEL AREA ------------------------------------------------->
-      <div class="game-area">
+        <!-- ⭐ Phaser canvas mounts here (hidden div, no content) -->
+        <div id="phaserLayer" class="phaser-layer"></div>
+
+        <!-- DOM reels (in front of Phaser) -->
         <div class="reels-container" id="reelsContainer">
           <!-- reels injected by JS -->
         </div>
-
-
-        <!-- SVG glow frame (sits on top of reels) -->
-     
       </div>
 
-
-      <!-- MAIN SPIN BUTTON ----------------------------------------->
-      <div class="controls">
-        <button class="spin-btn" id="spinBtn">SPIN</button>
-      </div>
-
-
-      <!-- EXTRA PLAY CONTROLS -------------------------------------->
-      <div class="play-controls">
+      <!-- MAIN + EXTRA PLAY CONTROLS ----------------------------->
+      <div class="controls-row">
         <button id="turboBtn" class="hud-btn">Turbo: Off</button>
-        <button id="autoBtn"  class="hud-btn">Auto 10</button>
-        <button id="fxBtn"    class="hud-btn">Low FX: Off</button>
+
+        <div class="balance">💰 BALANCE: $<span id="balanceAmount">0.00</span></div>
+
+        <button class="spin-btn" id="spinBtn">SPIN</button>
+
+        <div class="bet">🎰 BET: $<span id="betAmount">1.00</span></div>
+
+        <button id="maxBet" class="btn btn-yellow">MAX</button>
+        <button id="betDown" class="btn btn-red">BET -</button>
+        <button id="betUp" class="btn btn-green">BET +</button>
+
+        <button id="autoBtn" class="hud-btn">Auto 10</button>
       </div>
 
-
-      <!-- INFO PANEL ----------------------------------------------->
+      <!-- INFO PANEL --------------------------------------------->
       <div class="info-panel">
         <div class="info-box">
           <div class="info-label">Total Spins</div>
           <div class="info-value" id="totalSpins">0</div>
         </div>
 
-
         <div class="info-box">
           <div class="info-label">Free Spins</div>
           <div class="info-value" id="freeSpins">0</div>
         </div>
 
-
         <div class="info-box">
-          <div class="info-label">Current Bet</div>
-          <div class="info-value">$1.00</div>
+          <div class="info-label">Total Win</div>
+          <div class="info-value" id="lastWinAmount">$0.00</div>
         </div>
-
 
         <div class="info-box">
           <div class="info-label">Max Ways</div>
@@ -85,15 +82,15 @@
         </div>
       </div>
 
-
     </div><!-- /.slot-machine -->
   </div><!-- /.cabinet -->
 
 
   <!-- Game logic -->
-  <script type="module" src="js/game.js"></script>
+<!-- in index.html, just before </body> -->
+<script src="js/phaser.js?nocache=1"></script>   <!-- add ?nocache to ditch all cached copies -->
+<script type="module" src="js/game.js"></script>
+
+
 </body>
 </html>
-
-
-
